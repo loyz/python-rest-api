@@ -39,7 +39,17 @@ After translation, these segments should be reassembled into the original HTML s
 # Strategy
 
 1. Setup Django, PostgreSQL and Django REST API Framework in Docker
-2. User-Authentication
+2. Custom User Model: 
+    - User-Authentication with email / Permissions for staff / Future Proof
+        Fields:
+        - email (EmailField)
+        - name (CharField)
+        - is_active (BooleanField)
+        - is_staff (BooleanField)
+    - User model manager
+        - Hash password
+        - Create superuser
+    - Create Custom Manager for CLI
 3. App for translating User Input
     a) Filter HTML
         - get all valid HTML Tags from W3C? or
