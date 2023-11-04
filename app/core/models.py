@@ -3,7 +3,7 @@ Database Models.
 """
 
 from django.db import models
-from django.contrib. auth.models import(
+from django.contrib.auth.models import(
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
@@ -15,7 +15,7 @@ class UserManager(BaseUserManager):
 
     def create_user(self, email, password=None, **extra_fields):
         """Create, save and return a new user."""
-        user=self.model(email=self.normalize_email(email), **extra_fields)
+        user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
 
@@ -32,5 +32,3 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-
-
