@@ -129,7 +129,7 @@ class Translation(models.Model):
                 if isinstance(tag.string, NavigableString):
                     # Here you should implement the translation logic
                     translated_text = self.translate_to_german(tag.string)
-                    print(f"Translated text: {translated_text}")  # Debugging print statement
+                    # print(f"Translated text: {translated_text}")  # Debugging print statement
                     tag.string.replace_with(translated_text)
             translated_elements.append(str(soup))
         return translated_elements

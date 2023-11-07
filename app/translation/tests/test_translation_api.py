@@ -95,7 +95,7 @@ class TranslationApiTests(TestCase):
 
         # Retrieve the translation object from API.
         res = self.client.get(f'{TRANSLATIONS_URL}{translation.id}/')
-        print(translation.translation_result) # print statement for debugging
+        # print(translation.translation_result) # print statement for debugging
         # Assert that the retrieved translation is correct.
         self.assertEqual(
             res.data['translation_result'], translation.translation_result.text
@@ -128,3 +128,24 @@ class TranslationApiTests(TestCase):
 
         # Check that the returned translation matches the expected output.
         self.assertEqual(res.data['translation_result'], expected_output)
+
+    def test_translation_admin_endpoint(self):
+        # Create a Translation instance
+        translation = Translation.objects.create(
+            user=self.user,
+            content_type='plain-text',
+            translation_input="This string will be translated to German",
+            translation_elements=[],
+            translation_result="Dieser Text wird ins Deutsche übersetzt",
+        )
+        # Call the save method to perform the translation
+        translation.save()
+
+        # Send a GET request to the API endpoint
+        response = self.client.get(f'/admin/core/translation/{translation.id}/change/')
+
+        # Check that the response status code is 200 (OK)
+        self.assertEqual(response.status_code, 200)
+
+        # Check that the response data contains the correct translation
+        self.assertContains(response, 'Diese Zeichenfolge wird ins Deutsche übersetzt')
