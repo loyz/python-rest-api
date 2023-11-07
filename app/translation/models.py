@@ -4,7 +4,6 @@ Database Models.
 from django.conf import settings
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -12,7 +11,8 @@ from django.contrib.auth.models import (
     PermissionsMixin,
     Group,
     Permission,
-    )
+)
+from django.utils.translation import gettext_lazy as _
 from bs4 import BeautifulSoup
 
 import json
@@ -54,17 +54,17 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     groups = models.ManyToManyField(
         Group,
-        verbose_name=_('groups'),
+        verbose_name=_('translation groups'),
         blank=True,
-        related_name="core_user_groups",
+        related_name="translation_user_groups",
         # other arguments...
     )
 
     user_permissions = models.ManyToManyField(
         Permission,
-        verbose_name=_('user permissions'),
+        verbose_name=_('translation user permissions'),
         blank=True,
-        related_name="core_user_permissions",
+        related_name="translation_user_permissions",
         # other arguments...
     )
 
@@ -75,6 +75,7 @@ class Translation(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        related_name='translations',  # Add a unique related name
     )
     content_type = models.CharField(max_length=100)
     translation_input = models.TextField(blank=True)
