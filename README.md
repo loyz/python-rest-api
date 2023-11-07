@@ -37,6 +37,10 @@ Follow the prompts to set the username and password for the superuser.
 Access the project by entering `localhost:8000` in your web browser.
 
 ### Use the Translation API
+
+#### Activate DeepL API with your key
+add a file with your Key for the DeepL REST API to a file at '/app/app/config.py'
+#### API Documentation
 There is a Swagger API Documentation at
 'http://localhost:8000/api/docs/'
 In short, the Translations can be passed and retrieved here:
