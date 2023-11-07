@@ -16,9 +16,14 @@ Ensure Docker and Docker Compose are installed on your system.
     ```
 
 ### Start the Project
+Build the container and install dependencies:
+```
+docker-compose build
+```
+
 Start Docker containers:
 ```
-docker-compose up
+docker-compose up -d
 ```
 
 ### Run Tests
@@ -40,6 +45,10 @@ Access the project by entering `localhost:8000` in your web browser.
 
 #### Activate DeepL API with your key
 add a file with your Key for the DeepL REST API to a file at '/app/app/config.py'
+the file should look like this:
+```
+DEEPL_AUTH_KEY = "your-api-key"
+```
 #### API Documentation
 There is a Swagger API Documentation at
 'http://localhost:8000/api/docs/'

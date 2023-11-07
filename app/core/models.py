@@ -16,6 +16,9 @@ from django.contrib.auth.models import (
 
 from bs4 import BeautifulSoup, NavigableString
 
+from deepl import Translator
+from app.config import DEEPL_AUTH_KEY
+
 import json
 
 
@@ -75,6 +78,8 @@ CONTENT_TYPE_CHOICES = [
     ('html', 'HTML'),
 ]
 
+translator = Translator(DEEPL_AUTH_KEY)
+
 
 class Translation(models.Model):
     """Model for translations request & response."""
@@ -104,6 +109,9 @@ class Translation(models.Model):
             self.translation_elements = (
                 self.filter_and_translate_html(self.translation_elements)
                 )
+            # Set the translation_result field to the joined version of translated elements
+            self.translation_result = ' '.join(self.translation_elements)
+            print(f"Translation result: {self.translation_result}")  # Debugging print statement
         super().save(*args, **kwargs)
 
     def get_soup_content(self):
@@ -118,14 +126,15 @@ class Translation(models.Model):
                 if isinstance(tag.string, NavigableString):
                     # Here you should implement the translation logic
                     translated_text = self.translate_to_german(tag.string)
+                    print(f"Translated text: {translated_text}")  # Debugging print statement
                     tag.string.replace_with(translated_text)
             translated_elements.append(str(soup))
         return translated_elements
 
     def translate_to_german(self, text):
         # Implement translation logic here
-        # For now, it just returns the same text
-        return text
+        translation_output = translator.translate_text(text, target_lang='DE')
+        return translation_output
 
     def to_json(self):
         return json.dumps({

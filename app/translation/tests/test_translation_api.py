@@ -5,6 +5,8 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
+from unittest.mock import patch
+
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -65,6 +67,7 @@ class TranslationApiTests(TestCase):
             'translation_result': "Dieser Text wird ins Deutsche übersetzt",
         }
 
+
         # Create translation object from API.
         res = self.client.post(TRANSLATIONS_URL, payload)
 
@@ -114,8 +117,10 @@ class TranslationApiTests(TestCase):
             'translation_elements': [],
         }
 
-        # Send the translation request.
-        res = self.client.post(TRANSLATIONS_URL, payload)
+        # Mock the `translate_to_german` method.
+        with patch('core.models.Translation.translate_to_german', return_value=expected_output) as mock_translate:
+            # Create translation object from API.
+            res = self.client.post(TRANSLATIONS_URL, payload)
 
         # Check that the request was successful.
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
