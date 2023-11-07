@@ -95,10 +95,10 @@ class TranslationApiTests(TestCase):
 
         # Retrieve the translation object from API.
         res = self.client.get(f'{TRANSLATIONS_URL}{translation.id}/')
-
+        print(translation.translation_result) # print statement for debugging
         # Assert that the retrieved translation is correct.
         self.assertEqual(
-            res.data['translation_result'], translation.translation_result
+            res.data['translation_result'], translation.translation_result.text
             )
         # Compare user.
         self.assertEqual(translation.user, self.user)
@@ -118,7 +118,8 @@ class TranslationApiTests(TestCase):
         }
 
         # Mock the `translate_to_german` method.
-        with patch('core.models.Translation.translate_to_german', return_value=expected_output) as mock_translate:
+        with patch('core.models.Translation.translate_to_german', \
+        return_value=expected_output) as mock_translate:
             # Create translation object from API.
             res = self.client.post(TRANSLATIONS_URL, payload)
 
