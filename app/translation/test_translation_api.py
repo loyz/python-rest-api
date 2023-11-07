@@ -50,11 +50,12 @@ class TranslationApiTests(TestCase):
         payload = {
             'content_type': 'HTML',
             'translation_input': "<h2 class='editor-heading-h2' dir='ltr'><span>hallo1 as headline</span></h2><p class='editor-paragraph' dir='ltr'><br></p><p class='editor-paragraph' dir='ltr'><span>hallo2 as paragraph</span></p><p class='editor-paragraph' dir='ltr'><span>hallo3 as paragraph with </span><b><strong class='editor-text-bold'>bold</strong></b><span> inline</span></p>",
-            'translation_result': {
-                "<span>hallo1 als Überschrift</span>",
-                "<span>hallo2 als Überschrift</span>",
-                "<span>hallo3 als Absatz mit </span><b><strong class='editor-text-bold'>fett</strong></b><span> inline</span>",
-                }
+            'translation_elements': [
+            "<span>hallo1 als Überschrift</span>",
+            "<span>hallo2 als Überschrift</span>",
+            "<span>hallo3 als Absatz mit </span><b><strong class='editor-text-bold'>fett</strong></b><span> inline</span>",
+            ],
+            'translation_result': "&lt;h2 class='editor-heading-h2' dir='ltr'&gt;&lt;span&gt;hallo1 als Überschrift&lt;/span&gt;&lt;/h2&gt;&lt;p class='editor-paragraph' dir='ltr'&gt;&lt;br&gt;&lt;/p&gt;&lt;p class='editor-paragraph' dir='ltr'&gt;&lt;span&gt;hallo2 als Absatz&lt;/span&gt;&lt;/p&gt;&lt;p class='editor-paragraph' dir='ltr'&gt;&lt;span&gt;hallo3 als Absatz mit &lt;/span&gt;&lt;b&gt;&lt;strong class='editor-text-bold'&gt;fett&lt;/strong&gt;&lt;/b&gt;&lt;span&gt; Inline&lt;/span&gt;&lt;/p&gt;",
         }
         """Create translation object from API."""
         res = self.client.post(TRANSLATIONS_URL, payload)
@@ -68,17 +69,16 @@ class TranslationApiTests(TestCase):
         # Deserialize the JSON data into a Python dictionary
         translation_dict = json.loads(translation_data)
 
+        print(translation_dict)
 
         # Loop through the payload dictionary and compare its values with the corresponding values in the translation_dict
         for k, v in payload.items():
             # Get the value from the translation_dict that corresponds to the current key in the payload dictionary
             translation_value = translation_dict.get(k)
 
-            # Compare the values
-            if v == translation_value:
-                print(f"Value of '{k}' matches: {v}")
-            else:
-                print(f"Value of '{k}' does not match: expected '{v}', got '{translation_value}'")
+            # Compare the values using assertEqual
+            self.maxDiff = None
+            self.assertEqual(v, translation_value, f"Value of '{k}' does not match: expected '{v}', got '{translation_value}'")
 
         self.assertEqual(translation.user, self.user)
 

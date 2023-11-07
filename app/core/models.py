@@ -13,7 +13,8 @@ from django.contrib.auth.models import (
     Group,
     Permission,
     )
-from bs4 import BeautifulSoup
+from django.utils.translation import gettext_lazy as _
+from bs4 import BeautifulSoup, NavigableString
 
 import json
 
@@ -68,6 +69,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         # other arguments...
     )
 
+CONTENT_TYPE_CHOICES = [
+    ('plain-text', 'Plain Text'),
+    ('html', 'HTML'),
+]
 
 
 class Translation(models.Model):
@@ -84,17 +89,39 @@ class Translation(models.Model):
         default=list,
         )
     translation_result = models.TextField(blank=True)
+
+    def __str__(self):
+        return f"Translation {self.id} Input: {self.translation_input}"
+
     """save() method is overridden to check if translation_input is present
         and translation_elements is empty. If this condition is true, the input is parsed using Beautiful Soup
         and converted to a list of strings using a list comprehension."""
     def save(self, *args, **kwargs):
         if self.translation_input and not self.translation_elements:
-            soup = BeautifulSoup(self.translation_input, 'html.parser')
-            self.translation_elements = [str(tag) for tag in soup.find_all()]
+            self.translation_elements = self.get_soup_content()
+            self.translation_elements = self.filter_and_translate_html(self.translation_elements)
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return f"Translation {self.id} Input: {self.translation_input}"
+    def get_soup_content(self):
+        soup = BeautifulSoup(self.translation_input, 'html.parser')
+        return [str(tag) for tag in soup.find_all()]
+
+    def filter_and_translate_html(self, elements):
+        translated_elements = []
+        for element in elements:
+            soup = BeautifulSoup(element, 'html.parser')
+            for tag in soup.find_all():
+                if isinstance(tag.string, NavigableString):
+                    # Here you should implement the translation logic
+                    translated_text = self.translate_to_german(tag.string)
+                    tag.string.replace_with(translated_text)
+            translated_elements.append(str(soup))
+        return translated_elements
+
+    def translate_to_german(self, text):
+        # Implement your translation logic here
+        # For now, it just returns the same text
+        return text
 
     def to_json(self):
         return json.dumps({
@@ -105,6 +132,5 @@ class Translation(models.Model):
             'translation_elements': self.translation_elements,
             'translation_result': self.translation_result,
         })
-
 
 

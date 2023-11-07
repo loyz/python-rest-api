@@ -62,7 +62,7 @@ class ModelTests(TestCase):
             translation_input='Hello, world!',
             content_type='plain_text',
             translation_elements={},
-            translation_result='Hallo, Welt!',
+            translation_result='',
         )
 
         self.assertIn(translation.translation_input, str(translation))
