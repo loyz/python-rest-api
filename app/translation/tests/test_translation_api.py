@@ -22,11 +22,16 @@ def create_sample_translation(user, **params):
     """Create and return a sample translation."""
     defaults = {
         'content_type': 'HTML',
-        'translation_input': "<h2 class='editor-heading-h2' dir='ltr'><span>hallo1 as headline</span></h2><p class='editor-paragraph' dir='ltr'><br></p><p class='editor-paragraph' dir='ltr'><span>hallo2 as paragraph</span></p><p class='editor-paragraph' dir='ltr'><span>hallo3 as paragraph with </span><b><strong class='editor-text-bold'>bold</strong></b><span> inline</span></p>",
+        'translation_input': "<h2 class='editor-heading-h2' dir='ltr'> \
+         <span>hallo1 as headline</span></h2><p class='editor-paragraph' dir='ltr'><br></p> \
+         <p class='editor-paragraph' dir='ltr'><span>hallo2 as paragraph</span></p> \
+         <p class='editor-paragraph' dir='ltr'><span>hallo3 as paragraph with </span> \
+         <b><strong class='editor-text-bold'>bold</strong></b><span> inline</span></p>",
         'translation_elements': [
             "<span>hallo1 as headline</span>",
             "<span>hallo2 as paragraph</span>",
-            "<span>hallo3 as paragraph with </span><b><strong class='editor-text-bold'>bold</strong></b><span> inline</span>",
+            "<span>hallo3 as paragraph with </span><b><strong class='editor-text-bold'>bold</strong> \
+            </b><span> inline</span>",
         ],
         'translation_result': '',
     }
@@ -66,7 +71,9 @@ class TranslationApiTests(TestCase):
         translation = Translation.objects.get(id=res.data['id'])
 
         # Assert that the translation was saved correctly.
-        self.assertEqual(translation.translation_input, payload['translation_input'])
+        self.assertEqual(
+            translation.translation_input, payload['translation_input']
+            )
 
     def test_retrieve_translation(self):
         """Test retrieving a translation."""
@@ -83,6 +90,8 @@ class TranslationApiTests(TestCase):
         res = self.client.get(f'{TRANSLATIONS_URL}{translation.id}/')
 
         # Assert that the retrieved translation is correct.
-        self.assertEqual(res.data['translation_result'], translation.translation_result)
+        self.assertEqual(
+            res.data['translation_result'], translation.translation_result
+            )
         # Compare user.
         self.assertEqual(translation.user, self.user)

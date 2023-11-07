@@ -11,10 +11,10 @@ from drf_spectacular.utils import (
 from rest_framework import (
     viewsets,
     mixins,
-    status,
+    # status,
 )
-from rest_framework.decorators import action
-from rest_framework.response import Response
+# from rest_framework.decorators import action
+# from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
@@ -53,7 +53,6 @@ class TranslationViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-
 @extend_schema_view(
     list=extend_schema(
         parameters=[
@@ -65,10 +64,12 @@ class TranslationViewSet(viewsets.ModelViewSet):
         ]
     )
 )
+
+
 class BaseTranslationAttrViewSet(mixins.DestroyModelMixin,
-                            mixins.UpdateModelMixin,
-                            mixins.ListModelMixin,
-                            viewsets.GenericViewSet):
+                                 mixins.UpdateModelMixin,
+                                 mixins.ListModelMixin,
+                                 viewsets.GenericViewSet):
     """Base viewset for translation attributes."""
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]

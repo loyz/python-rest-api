@@ -7,7 +7,8 @@ from core.models import (
     Translation
 )
 
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
+
 
 class TranslationSerializer(serializers.ModelSerializer):
     """Serializer for translations."""
@@ -15,7 +16,8 @@ class TranslationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Translation
         fields = [
-            'id', 'content_type', 'translation_input', 'translation_elements', 'translation_result',
+            'id', 'content_type', 'translation_input',
+            'translation_elements', 'translation_result',
         ]
         read_only_fields = ['id', 'translation_elements', 'translation_result']
 

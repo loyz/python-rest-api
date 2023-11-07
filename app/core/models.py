@@ -69,6 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         # other arguments...
     )
 
+
 CONTENT_TYPE_CHOICES = [
     ('plain-text', 'Plain Text'),
     ('html', 'HTML'),
@@ -94,12 +95,15 @@ class Translation(models.Model):
         return f"Translation {self.id} Input: {self.translation_input}"
 
     """save() method is overridden to check if translation_input is present
-        and translation_elements is empty. If this condition is true, the input is parsed using Beautiful Soup
+        and translation_elements is empty. If this condition is true,
+        the input is parsed using Beautiful Soup
         and converted to a list of strings using a list comprehension."""
     def save(self, *args, **kwargs):
         if self.translation_input and not self.translation_elements:
             self.translation_elements = self.get_soup_content()
-            self.translation_elements = self.filter_and_translate_html(self.translation_elements)
+            self.translation_elements = (
+                self.filter_and_translate_html(self.translation_elements)
+                )
         super().save(*args, **kwargs)
 
     def get_soup_content(self):
