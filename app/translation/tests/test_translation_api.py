@@ -99,3 +99,26 @@ class TranslationApiTests(TestCase):
             )
         # Compare user.
         self.assertEqual(translation.user, self.user)
+
+    def test_actual_translation(self):
+        """Test actual translation from English to German."""
+        # Define the input and expected output.
+        input_text = "This string will be translated to German"
+        expected_output = "Dieser Text wird ins Deutsche übersetzt"
+
+        # Prepare the payload.
+        payload = {
+            'user': self.user.id,
+            'content_type': 'plain-text',
+            'translation_input': input_text,
+            'translation_elements': [],
+        }
+
+        # Send the translation request.
+        res = self.client.post(TRANSLATIONS_URL, payload)
+
+        # Check that the request was successful.
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        # Check that the returned translation matches the expected output.
+        self.assertEqual(res.data['translation_result'], expected_output)
