@@ -13,7 +13,7 @@ from django.contrib.auth.models import (
     Group,
     Permission,
     )
-from django.utils.translation import gettext_lazy as _
+
 from bs4 import BeautifulSoup, NavigableString
 
 import json

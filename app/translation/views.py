@@ -64,8 +64,6 @@ class TranslationViewSet(viewsets.ModelViewSet):
         ]
     )
 )
-
-
 class BaseTranslationAttrViewSet(mixins.DestroyModelMixin,
                                  mixins.UpdateModelMixin,
                                  mixins.ListModelMixin,

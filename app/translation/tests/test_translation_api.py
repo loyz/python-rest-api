@@ -10,27 +10,31 @@ from rest_framework.test import APIClient
 
 from core.models import Translation
 
-from translation.serializers import TranslationSerializer
+# from translation.serializers import TranslationSerializer
 
-import html
+# import html
 
-import json
+# import json
 
 TRANSLATIONS_URL = reverse('translation:translation-list')
+
 
 def create_sample_translation(user, **params):
     """Create and return a sample translation."""
     defaults = {
         'content_type': 'HTML',
         'translation_input': "<h2 class='editor-heading-h2' dir='ltr'> \
-         <span>hallo1 as headline</span></h2><p class='editor-paragraph' dir='ltr'><br></p> \
-         <p class='editor-paragraph' dir='ltr'><span>hallo2 as paragraph</span></p> \
-         <p class='editor-paragraph' dir='ltr'><span>hallo3 as paragraph with </span> \
-         <b><strong class='editor-text-bold'>bold</strong></b><span> inline</span></p>",
+         <span>hallo1 as headline</span></h2>  \
+         <p class='editor-paragraph' dir='ltr'><br></p>  \
+         <p class='editor-paragraph' dir='ltr'><span>hallo2 as paragraph  \
+         </span></p><p class='editor-paragraph' dir='ltr'><span>hallo3 as  \
+         paragraph with </span><b><strong class='editor-text-bold'>bold \
+         </strong></b><span> inline</span></p>",
         'translation_elements': [
             "<span>hallo1 as headline</span>",
             "<span>hallo2 as paragraph</span>",
-            "<span>hallo3 as paragraph with </span><b><strong class='editor-text-bold'>bold</strong> \
+            "<span>hallo3 as paragraph with </span> \
+            <b><strong class='editor-text-bold'>bold</strong> \
             </b><span> inline</span>",
         ],
         'translation_result': '',
