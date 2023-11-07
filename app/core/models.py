@@ -96,11 +96,11 @@ class Translation(models.Model):
     """save() method is overridden to check if translation_input is present
         and translation_elements is empty. If this condition is true, the input is parsed using Beautiful Soup
         and converted to a list of strings using a list comprehension."""
-    def save(self, *args, **kwargs):
-        if self.translation_input and not self.translation_elements:
-            self.translation_elements = self.get_soup_content()
-            self.translation_elements = self.filter_and_translate_html(self.translation_elements)
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.translation_input and not self.translation_elements:
+    #         self.translation_elements = self.get_soup_content()
+    #         self.translation_elements = self.filter_and_translate_html(self.translation_elements)
+    #     super().save(*args, **kwargs)
 
     def get_soup_content(self):
         soup = BeautifulSoup(self.translation_input, 'html.parser')
@@ -119,7 +119,7 @@ class Translation(models.Model):
         return translated_elements
 
     def translate_to_german(self, text):
-        # Implement your translation logic here
+        # Implement translation logic here
         # For now, it just returns the same text
         return text
 

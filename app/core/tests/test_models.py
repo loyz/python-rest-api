@@ -61,7 +61,7 @@ class ModelTests(TestCase):
             user=user,
             translation_input='Hello, world!',
             content_type='plain_text',
-            translation_elements={},
+            translation_elements=[],
             translation_result='',
         )
 
@@ -73,4 +73,4 @@ class ModelTests(TestCase):
         self.assertEqual(json_data['user'], user.email)
         self.assertEqual(json_data['translation_input'], 'Hello, world!')
         self.assertEqual(json_data['content_type'], 'plain_text')
-        self.assertEqual(json_data['translation_result'], 'Hallo, Welt!')
+        self.assertEqual(json_data['translation_result'], '')

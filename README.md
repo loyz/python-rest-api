@@ -35,3 +35,13 @@ docker-compose run --rm app sh -c "python manage.py createsuperuser"
 Follow the prompts to set the username and password for the superuser.
 
 Access the project by entering `localhost:8000` in your web browser.
+
+### Use the Translation API
+There is a Swagger API Documentation at
+'http://localhost:8000/api/docs/'
+In short, the Translations can be passed and retrieved here:
+'http://localhost:8000/admin/core/translation/'
+The User API you'll find here:
+'http://localhost:8000/admin/core/user/'
+
+Happy translating! :sparkles: :fireworks:
