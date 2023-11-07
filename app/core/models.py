@@ -104,14 +104,17 @@ class Translation(models.Model):
         the input is parsed using Beautiful Soup
         and converted to a list of strings using a list comprehension."""
     def save(self, *args, **kwargs):
-        if self.translation_input and not self.translation_elements:
+        if self.content_type == 'plain-text':
+            # Translate the input directly if it's a plain text.
+            self.translation_result = self.translate_to_german(self.translation_input)
+        elif self.translation_input and not self.translation_elements:
+            # Otherwise, process the input as HTML.
             self.translation_elements = self.get_soup_content()
             self.translation_elements = (
                 self.filter_and_translate_html(self.translation_elements)
                 )
             # Set the translation_result field to the joined version of translated elements
             self.translation_result = ' '.join(self.translation_elements)
-            print(f"Translation result: {self.translation_result}")  # Debugging print statement
         super().save(*args, **kwargs)
 
     def get_soup_content(self):
