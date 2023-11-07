@@ -27,7 +27,7 @@ def create_sample_translation(user, **params):
             "<span>hallo1 as headline</span>",
             "<span>hallo2 as paragraph</span>",
             "<span>hallo3 as paragraph with </span><b><strong class='editor-text-bold'>bold</strong></b><span> inline</span>",
-        ,]
+        ],
         'translation_result': '',
     }
     defaults.update(params)
