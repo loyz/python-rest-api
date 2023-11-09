@@ -4,6 +4,7 @@ Tests for models.
 
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from unittest.mock import patch
 import json
 
 from core import models
@@ -57,18 +58,20 @@ class ModelTests(TestCase):
             'test@example.com',
             'testpass123'
         )
-        translation = models.Translation.objects.create(
-            user=user,
-            translation_input='Hello, world!',
-            content_type='plain_text',
-            translation_elements=[],
-            translation_result='',
-        )
+
+        # Mock the translation function
+        with patch('core.models.Translation.translate_input', return_value='Hallo, Welt!') as mock_translate:
+            translation = models.Translation.objects.create(
+                user=user,
+                translation_input='Hello, world!',
+                content_type='plain_text',
+                translation_elements=[],
+                translation_result='',
+            )
 
         self.assertIn(translation.translation_input, str(translation))
 
         if (translation.content_type == 'html'):
-
             json_data = json.loads(translation.to_json())
 
             self.assertEqual(json_data['id'], translation.id)

@@ -120,18 +120,22 @@ class Translation(models.Model):
                 # Translate the tag's content
                 translated_text = self.translate_to_german(tag.string)
                 tag.string.replace_with(translated_text)
-
-    def save(self, *args, **kwargs):
+    def translate_input(self):
         if self.content_type == 'plain_text':
             # Translate the input directly if it's a plain text.
             self.translation_result = self.translate_to_german(self.translation_input)
-            # print(self.translation_result)
+            print(self.translation_result)
+            print("from translate input!!! \n")
         elif self.translation_input:
             # Otherwise, process the input as HTML.
             soup = BeautifulSoup(self.translation_input, 'html.parser')
             self.translation_elements = self.get_html_elements(soup)
             self.translate_html(soup)
             self.translation_result = str(soup)
+
+    def save(self, *args, **kwargs):
+        # Call translate_input method before saving the object.
+        self.translate_input()
         super().save(*args, **kwargs)
 
     def to_json(self):
