@@ -74,7 +74,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 CONTENT_TYPE_CHOICES = [
-    ('plain-text', 'Plain Text'),
+    ('plain_text', 'Plain Text'),
     ('html', 'HTML'),
 ]
 
@@ -87,7 +87,7 @@ class Translation(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    content_type = models.CharField(max_length=100)
+    content_type = models.CharField(max_length=100, choices=CONTENT_TYPE_CHOICES)
     translation_input = models.TextField(blank=True)
     translation_elements = ArrayField(
         models.CharField(max_length=255),
@@ -99,45 +99,40 @@ class Translation(models.Model):
     def __str__(self):
         return f"Translation {self.id} Input: {self.translation_input}"
 
-    """save() method is overridden to check if translation_input is present
-        and translation_elements is empty. If this condition is true,
-        the input is parsed using Beautiful Soup
-        and converted to a list of strings using a list comprehension."""
-    def save(self, *args, **kwargs):
-        if self.content_type == 'plain-text':
-            # Translate the input directly if it's a plain text.
-            self.translation_result = self.translate_to_german(self.translation_input)
-        elif self.translation_input and not self.translation_elements:
-            # Otherwise, process the input as HTML.
-            self.translation_elements = self.get_soup_content()
-            self.translation_elements = (
-                self.filter_and_translate_html(self.translation_elements)
-                )
-            # Set the translation_result field to the joined version of translated elements
-            self.translation_result = ' '.join(self.translation_elements)
-        super().save(*args, **kwargs)
+    def get_html_elements(self, soup):
+        return [str(tag) for tag in soup.find_all(True)]
 
     def get_soup_content(self):
         soup = BeautifulSoup(self.translation_input, 'html.parser')
         return [str(tag) for tag in soup.find_all()]
 
-    def filter_and_translate_html(self, elements):
-        translated_elements = []
-        for element in elements:
-            soup = BeautifulSoup(element, 'html.parser')
-            for tag in soup.find_all():
-                if isinstance(tag.string, NavigableString):
-                    # Here you should implement the translation logic
-                    translated_text = self.translate_to_german(tag.string)
-                    # print(f"Translated text: {translated_text}")  # Debugging print statement
-                    tag.string.replace_with(translated_text)
-            translated_elements.append(str(soup))
-        return translated_elements
-
     def translate_to_german(self, text):
         # Implement translation logic here
         translation_output = translator.translate_text(text, target_lang='DE')
         return translation_output
+
+    def translate_html(self, soup):
+        for tag in soup.find_all(True):  # Find all tags
+            if tag.contents:
+                # If the tag has children, handle them recursively
+                self.translate_html(tag)
+            else:
+                # Translate the tag's content
+                translated_text = self.translate_to_german(tag.string)
+                tag.string.replace_with(translated_text)
+
+    def save(self, *args, **kwargs):
+        if self.content_type == 'plain_text':
+            # Translate the input directly if it's a plain text.
+            self.translation_result = self.translate_to_german(self.translation_input)
+            # print(self.translation_result)
+        elif self.translation_input:
+            # Otherwise, process the input as HTML.
+            soup = BeautifulSoup(self.translation_input, 'html.parser')
+            self.translation_elements = self.get_html_elements(soup)
+            self.translate_html(soup)
+            self.translation_result = str(soup)
+        super().save(*args, **kwargs)
 
     def to_json(self):
         return json.dumps({

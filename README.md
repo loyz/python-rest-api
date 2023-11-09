@@ -57,4 +57,22 @@ In short, the Translations can be passed and retrieved here:
 The User API you'll find here:
 'http://localhost:8000/admin/core/user/'
 
+### Test the API
+To test the API you have to generat an auth token first:
+#### Generate Auth Token
+Go to 'http://localhost:8000/api/docs/'
+In the Swagger section /api/user/token/ Hit the button "Try it out"
+fill in your superuser credentials: email and password. Hit "Execute".
+You should get a 200 response and your token returned in the response body.
+Copy your token and go to the top of the page. Hit the button "Authorize".
+Fill the section for tokenAuth with the word "Token" + space + your token.
+Hit Authorize.
+You can test if it worked correctly by pushing "Try it out" and then "Execute" under GET /api/user/me/
+If you receive a 200 you're correctly authenticated.
+#### Test the translation API
+You can test it via Swagger at POST /api/translation/translation/
+or at http://localhost:8000/admin/core/translation/ where you can see all translations if logged in as superuser.
+
+
+
 Happy translating! :sparkles: :fireworks:

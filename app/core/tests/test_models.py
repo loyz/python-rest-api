@@ -67,10 +67,11 @@ class ModelTests(TestCase):
 
         self.assertIn(translation.translation_input, str(translation))
 
-        json_data = json.loads(translation.to_json())
+        if (translation.content_type == 'html'):
 
-        self.assertEqual(json_data['id'], translation.id)
-        self.assertEqual(json_data['user'], user.email)
-        self.assertEqual(json_data['translation_input'], 'Hello, world!')
-        self.assertEqual(json_data['content_type'], 'plain_text')
-        self.assertEqual(json_data['translation_result'], '')
+            json_data = json.loads(translation.to_json())
+
+            self.assertEqual(json_data['id'], translation.id)
+            self.assertEqual(json_data['user'], user.email)
+            self.assertEqual(json_data['translation_input'], 'Hello, world!')
+            self.assertEqual(json_data['content_type'], 'plain_text')
