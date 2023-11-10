@@ -62,7 +62,7 @@ class ModelTests(TestCase):
         mocked_translation = 'Hallo, Welt!'
 
         # Mock the translation function
-        with patch('core.models.Translation.translate_input', return_value=mocked_translation) \
+        with patch('core.models.Translation.translate_to_german', return_value=mocked_translation) \
         as mock_translate:
             translation = models.Translation.objects.create(
                 user=user,

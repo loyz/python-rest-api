@@ -145,8 +145,8 @@ class Translation(models.Model):
             # Translate the input directly if it's a plain text.
             self.translation_result = \
             self.translate_to_german(self.translation_input)
-            print(self.translation_result)
-            print("from translate input!!! \n")
+            # print(self.translation_result)
+            # print("from translate input!!! \n")
         elif self.translation_input:
             # Otherwise, process the input as HTML.
             soup = BeautifulSoup(self.translation_input, 'html.parser')
