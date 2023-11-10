@@ -59,17 +59,21 @@ class ModelTests(TestCase):
             'testpass123'
         )
 
+        mocked_translation = 'Hallo, Welt!'
+
         # Mock the translation function
-        with patch('core.models.Translation.translate_input', return_value='Hallo, Welt!') as mock_translate:
+        with patch('core.models.Translation.translate_input', return_value=mocked_translation) \
+        as mock_translate:
             translation = models.Translation.objects.create(
                 user=user,
                 translation_input='Hello, world!',
                 content_type='plain_text',
                 translation_elements=[],
-                translation_result='',
+                translation_result='Hallo, Welt!',
             )
 
         self.assertIn(translation.translation_input, str(translation))
+        self.assertEqual(translation.translation_result, mocked_translation)
 
         if (translation.content_type == 'html'):
             json_data = json.loads(translation.to_json())
