@@ -16,7 +16,7 @@ from django.contrib.auth.models import (
 
 from bs4 import BeautifulSoup
 
-from app import config
+
 from deepl import Translator
 # from app.config import DEEPL_AUTH_KEY
 import os
@@ -25,6 +25,7 @@ DEEPL_AUTH_KEY = os.environ.get('DEEPL_AUTH_KEY')
 
 # If DEEPL_AUTH_KEY is empty, fallback to the value from app/config.py
 if not DEEPL_AUTH_KEY:
+    from app import config
     DEEPL_AUTH_KEY = config.DEEPL_AUTH_KEY
 
 import json
