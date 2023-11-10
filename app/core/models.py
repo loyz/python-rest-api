@@ -95,7 +95,7 @@ class Translation(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    content_type =
+    content_type = \
     models.CharField(max_length=100, choices=CONTENT_TYPE_CHOICES)
     translation_input = models.TextField(blank=True)
     translation_elements = ArrayField(
@@ -121,7 +121,7 @@ class Translation(models.Model):
             if not auth_key:
                 raise ValueError("DEEPL_AUTH_KEY must be set in environment.")
             self._translator = Translator(auth_key)
-        translation_output =
+        translation_output = \
         self._translator.translate_text(text, target_lang='DE')
         return translation_output
 
@@ -138,7 +138,7 @@ class Translation(models.Model):
     def translate_input(self):
         if self.content_type == 'plain_text':
             # Translate the input directly if it's a plain text.
-            self.translation_result =
+            self.translation_result = \
             self.translate_to_german(self.translation_input)
             print(self.translation_result)
             print("from translate input!!! \n")

@@ -135,7 +135,7 @@ class TranslationApiTests(TestCase):
         # Mock the translate_input method
         with patch.object(Translation, 'translate_input', return_value=None) \
         as mock_translate:
-            mock_translate.side_effect =
+            mock_translate.side_effect = \
             lambda: setattr(translation, 'translation_result', expected_output)
             # Save the translation object.
             translation.save()
@@ -187,8 +187,8 @@ class TranslationApiTests(TestCase):
 
         # Override the save method of Translation model
         def new_save(self, *args, **kwargs):
-            self.translation_result =
-            ‚self.translate_to_german(self.translation_input)
+            self.translation_result = \
+            self.translate_to_german(self.translation_input)
             super(Translation, self).save(*args, **kwargs)
 
         # Mock the translate_to_german method
