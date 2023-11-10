@@ -19,7 +19,6 @@ from bs4 import BeautifulSoup, NavigableString
 from deepl import Translator
 # from app.config import DEEPL_AUTH_KEY
 import os
-
 DEEPL_AUTH_KEY = os.environ.get('DEEPL_AUTH_KEY')
 
 import json
@@ -109,9 +108,16 @@ class Translation(models.Model):
         soup = BeautifulSoup(self.translation_input, 'html.parser')
         return [str(tag) for tag in soup.find_all()]
 
+    @property
     def translate_to_german(self, text):
+        if not hasattr(self, '_translator'):
+            auth_key = os.environ.get('DEEPL_AUTH_KEY')
+            if not auth_key:
+                raise ValueError("DEEPL_AUTH_KEY must be set in environment.")
+            self._translator = Translator(auth_key)
+        return self._translator
         # Implement translation logic here
-        translation_output = translator.translate_text(text, target_lang='DE')
+        translation_output = self.translator.translate_text(text, target_lang='DE')
         return translation_output
 
     def translate_html(self, soup):
