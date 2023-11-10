@@ -105,6 +105,10 @@ class Translation(models.Model):
         )
     translation_result = models.TextField(blank=True)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._translator = None
+
     def __str__(self):
         return f"Translation {self.id} Input: {self.translation_input}"
 
