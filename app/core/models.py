@@ -16,10 +16,16 @@ from django.contrib.auth.models import (
 
 from bs4 import BeautifulSoup, NavigableString
 
+from app import config
 from deepl import Translator
 # from app.config import DEEPL_AUTH_KEY
 import os
+# Get the value of DEEPL_AUTH_KEY from the environment variable
 DEEPL_AUTH_KEY = os.environ.get('DEEPL_AUTH_KEY')
+
+# If DEEPL_AUTH_KEY is empty, fallback to the value from app/config.py
+if not DEEPL_AUTH_KEY:
+    DEEPL_AUTH_KEY = config.DEEPL_AUTH_KEY
 
 import json
 
@@ -98,6 +104,12 @@ class Translation(models.Model):
         )
     translation_result = models.TextField(blank=True)
 
+    # def __init__(self, user=None, content_type=None):
+    #     self._user = user
+    #     self._content_type = content_type
+    #     self.translation_input = translation_input
+    #     self._translator = None
+
     def __str__(self):
         return f"Translation {self.id} Input: {self.translation_input}"
 
@@ -108,16 +120,13 @@ class Translation(models.Model):
         soup = BeautifulSoup(self.translation_input, 'html.parser')
         return [str(tag) for tag in soup.find_all()]
 
-    @property
     def translate_to_german(self, text):
-        if not hasattr(self, '_translator'):
+        if not self._translator:
             auth_key = os.environ.get('DEEPL_AUTH_KEY')
             if not auth_key:
                 raise ValueError("DEEPL_AUTH_KEY must be set in environment.")
             self._translator = Translator(auth_key)
-        return self._translator
-        # Implement translation logic here
-        translation_output = self.translator.translate_text(text, target_lang='DE')
+        translation_output = self._translator.translate_text(text, target_lang='DE')
         return translation_output
 
     def translate_html(self, soup):
