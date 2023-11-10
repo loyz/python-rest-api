@@ -73,7 +73,7 @@ class ModelTests(TestCase):
             )
 
         self.assertIn(translation.translation_input, str(translation))
-        self.assertEqual(translation.translation_result, mocked_translation)
+        self.assertEqual(translation.translation_result, mock_translate.return_value)
 
         if (translation.content_type == 'html'):
             json_data = json.loads(translation.to_json())
