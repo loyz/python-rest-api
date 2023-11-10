@@ -14,7 +14,7 @@ from django.contrib.auth.models import (
     Permission,
     )
 
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup
 
 from app import config
 from deepl import Translator
@@ -95,7 +95,8 @@ class Translation(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    content_type = models.CharField(max_length=100, choices=CONTENT_TYPE_CHOICES)
+    content_type =
+    models.CharField(max_length=100, choices=CONTENT_TYPE_CHOICES)
     translation_input = models.TextField(blank=True)
     translation_elements = ArrayField(
         models.CharField(max_length=255),
@@ -103,12 +104,6 @@ class Translation(models.Model):
         default=list,
         )
     translation_result = models.TextField(blank=True)
-
-    # def __init__(self, user=None, content_type=None):
-    #     self._user = user
-    #     self._content_type = content_type
-    #     self.translation_input = translation_input
-    #     self._translator = None
 
     def __str__(self):
         return f"Translation {self.id} Input: {self.translation_input}"
@@ -126,7 +121,8 @@ class Translation(models.Model):
             if not auth_key:
                 raise ValueError("DEEPL_AUTH_KEY must be set in environment.")
             self._translator = Translator(auth_key)
-        translation_output = self._translator.translate_text(text, target_lang='DE')
+        translation_output =
+        self._translator.translate_text(text, target_lang='DE')
         return translation_output
 
     def translate_html(self, soup):
@@ -138,10 +134,12 @@ class Translation(models.Model):
                 # Translate the tag's content
                 translated_text = self.translate_to_german(tag.string)
                 tag.string.replace_with(translated_text)
+
     def translate_input(self):
         if self.content_type == 'plain_text':
             # Translate the input directly if it's a plain text.
-            self.translation_result = self.translate_to_german(self.translation_input)
+            self.translation_result =
+            self.translate_to_german(self.translation_input)
             print(self.translation_result)
             print("from translate input!!! \n")
         elif self.translation_input:
