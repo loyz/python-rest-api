@@ -83,5 +83,5 @@ class ModelTests(TestCase):
             self.assertEqual(json_data['translation_input'], 'Hello, world!')
             self.assertEqual(json_data['content_type'], 'plain_text')
 
-    # Use the mock_translate variable to perform assertions and satisfy linter
-    mock_translate.assert_called_once()
+        # Use the mock_translate variable to perform assertions and satisfy linter
+        mock_translate.assert_called_once()
