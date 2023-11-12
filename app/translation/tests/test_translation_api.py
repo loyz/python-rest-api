@@ -78,7 +78,7 @@ class TranslationApiTests(TestCase):
 
         # Mock the translate_input method
         with patch.object(Translation, 'translate_input',
-                        return_value=expected_output) as mock_translate:
+                          return_value=expected_output) as mock_translate:
             # Create translation object from API.
             res = self.client.post(TRANSLATIONS_URL, payload)
 
@@ -90,10 +90,10 @@ class TranslationApiTests(TestCase):
 
         # Assert that the translation was saved correctly.
         self.assertEqual(translation.translation_input,
-                    payload['translation_input'])
+                payload['translation_input'])
         self.assertEqual(translation.translation_result, expected_output)
 
-        # Use the mock_translate variable to perform assertions and satisfy linter
+        # Use the mock_translate variable to satisfy linter
         mock_translate.assert_called_once()
 
     """This test was for checking retrieval with actual translation. \
@@ -145,6 +145,7 @@ class TranslationApiTests(TestCase):
 
         # Retrieve the translation object from API.
         res = self.client.get(f'{TRANSLATIONS_URL}{translation.id}/')
+
 
         # Assert that the retrieved translation is correct.
         self.assertEqual(res.data['translation_result'], expected_output)
