@@ -77,8 +77,8 @@ class TranslationApiTests(TestCase):
         }
 
         # Mock the translate_input method
-        with patch.object(Translation, 'translate_input', \
-        return_value=expected_output) as mock_translate:
+        with patch.object(Translation, 'translate_input',
+            return_value=expected_output) as mock_translate:
             # Create translation object from API.
             res = self.client.post(TRANSLATIONS_URL, payload)
 
@@ -89,9 +89,12 @@ class TranslationApiTests(TestCase):
         translation = Translation.objects.get(id=res.data['id'])
 
         # Assert that the translation was saved correctly.
-        self.assertEqual(translation.translation_input, \
-        payload['translation_input'])
+        self.assertEqual(translation.translation_input,
+            payload['translation_input'])
         self.assertEqual(translation.translation_result, expected_output)
+
+        # Use the mock_translate variable to perform assertions and satisfy linter
+        mock_translate.assert_called_once()
 
     """This test was for checking retrieval with actual translation. \
         It is commented out and mocked in the next test."""
@@ -104,7 +107,7 @@ class TranslationApiTests(TestCase):
     #         translation_input="This string will be translated to German",
     #         translation_elements=[],
     #         translation_result= \
-        #     "Diese Zeichenfolge wird ins Deutsche übersetzt",
+    #            "Diese Zeichenfolge wird ins Deutsche übersetzt",
     #     )
 
     #     # Retrieve the translation object from API.
@@ -134,9 +137,9 @@ class TranslationApiTests(TestCase):
 
         # Mock the translate_input method
         with patch.object(Translation, 'translate_input', return_value=None) \
-        as mock_translate:
+            as mock_translate:
             mock_translate.side_effect = \
-            lambda: setattr(translation, 'translation_result', expected_output)
+                lambda: setattr(translation, 'translation_result', expected_output)
             # Save the translation object.
             translation.save()
 
@@ -188,13 +191,13 @@ class TranslationApiTests(TestCase):
         # Override the save method of Translation model
         def new_save(self, *args, **kwargs):
             self.translation_result = \
-            self.translate_to_german(self.translation_input)
+                self.translate_to_german(self.translation_input)
             super(Translation, self).save(*args, **kwargs)
 
         # Mock the translate_to_german method
         with patch.object(Translation, 'save', new=new_save):
-            with patch.object(Translation, 'translate_to_german', \
-            return_value=expected_output):
+            with patch.object(Translation, 'translate_to_german',
+                return_value=expected_output):
                 # Create translation object from API.
                 res = self.client.post(TRANSLATIONS_URL, payload)
 
@@ -203,7 +206,6 @@ class TranslationApiTests(TestCase):
 
         # Check that the returned translation matches the expected output.
         self.assertEqual(res.data['translation_result'], expected_output)
-
 
     # def test_actual_translation_html(self):
     #     """Test actual translation from English

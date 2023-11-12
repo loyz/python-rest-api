@@ -16,6 +16,7 @@ from django.contrib.auth.models import (
 
 from bs4 import BeautifulSoup
 
+import json
 
 from deepl import Translator
 # from app.config import DEEPL_AUTH_KEY
@@ -27,8 +28,6 @@ DEEPL_AUTH_KEY = os.environ.get('DEEPL_AUTH_KEY')
 if not DEEPL_AUTH_KEY:
     from app import config
     DEEPL_AUTH_KEY = config.DEEPL_AUTH_KEY
-
-import json
 
 
 class UserManager(BaseUserManager):
@@ -97,7 +96,7 @@ class Translation(models.Model):
         on_delete=models.CASCADE,
     )
     content_type = \
-    models.CharField(max_length=100, choices=CONTENT_TYPE_CHOICES)
+        models.CharField(max_length=100, choices=CONTENT_TYPE_CHOICES)
     translation_input = models.TextField(blank=True)
     translation_elements = ArrayField(
         models.CharField(max_length=255),
@@ -127,7 +126,7 @@ class Translation(models.Model):
                 raise ValueError("DEEPL_AUTH_KEY must be set in environment.")
             self._translator = Translator(auth_key)
         translation_output = \
-        self._translator.translate_text(text, target_lang='DE')
+            self._translator.translate_text(text, target_lang='DE')
         return translation_output
 
     def translate_html(self, soup):
@@ -144,7 +143,7 @@ class Translation(models.Model):
         if self.content_type == 'plain_text':
             # Translate the input directly if it's a plain text.
             self.translation_result = \
-            self.translate_to_german(self.translation_input)
+                self.translate_to_german(self.translation_input)
             # print(self.translation_result)
             # print("from translate input!!! \n")
         elif self.translation_input:
