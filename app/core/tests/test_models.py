@@ -62,18 +62,19 @@ class ModelTests(TestCase):
         mocked_translation = 'Hallo, Welt!'
 
         # Mock the translation function
-        with patch('core.models.Translation.translate_to_german', \
+        with patch('core.models.Translation.translate_to_german',
             return_value=mocked_translation) as mock_translate:
-            translation = models.Translation.objects.create(
-                user=user,
-                translation_input='Hello, world!',
-                content_type='plain_text',
-                translation_elements=[],
-                translation_result='Hallo, Welt!',
-            )
+                translation = models.Translation.objects.create(
+                    user=user,
+                    translation_input='Hello, world!',
+                    content_type='plain_text',
+                    translation_elements=[],
+                    translation_result='Hallo, Welt!',
+                )
 
         self.assertIn(translation.translation_input, str(translation))
-        self.assertEqual(translation.translation_result, mock_translate.return_value)
+        self.assertEqual(translation.translation_result,
+            mock_translate.return_value)
 
         if (translation.content_type == 'html'):
             json_data = json.loads(translation.to_json())
@@ -83,5 +84,6 @@ class ModelTests(TestCase):
             self.assertEqual(json_data['translation_input'], 'Hello, world!')
             self.assertEqual(json_data['content_type'], 'plain_text')
 
-        # Use the mock_translate variable to perform assertions and satisfy linter
+        # Use the mock_translate variable to perform \
+        #    assertions and satisfy linter
         mock_translate.assert_called_once()
