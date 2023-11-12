@@ -137,11 +137,9 @@ class TranslationApiTests(TestCase):
         )
 
         # Mock the translate_input method
-        with patch.object(Translation, 'translate_input', return_value=None) \
-            as mock_translate:
-            mock_translate.side_effect = \
-                lambda: setattr(translation, 'translation_result',
-                   expected_output)
+        with patch.object(Translation, 'translate_input', return_value=None) as mock_translate:
+            mock_translate.side_effect = lambda: setattr(translation, 'translation_result',
+                expected_output)
             # Save the translation object.
             translation.save()
 
