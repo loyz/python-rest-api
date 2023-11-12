@@ -90,7 +90,7 @@ class TranslationApiTests(TestCase):
 
         # Assert that the translation was saved correctly.
         self.assertEqual(translation.translation_input,
-                    payload['translation_input'])  # noqua
+                        payload['translation_input'])  # noqua
         self.assertEqual(translation.translation_result, expected_output)
 
         # Use the mock_translate variable to satisfy linter
