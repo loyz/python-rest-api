@@ -200,8 +200,8 @@ class TranslationApiTests(TestCase):
         with patch.object(Translation, 'save', new=new_save):
             with patch.object(Translation, 'translate_to_german',
                 return_value=expected_output):
-            # Create translation object from API.
-            res = self.client.post(TRANSLATIONS_URL, payload)
+                    # Create translation object from API.
+                    res = self.client.post(TRANSLATIONS_URL, payload)
 
         # Check that the request was successful.
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
