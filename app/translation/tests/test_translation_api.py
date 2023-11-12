@@ -78,9 +78,9 @@ class TranslationApiTests(TestCase):
 
         # Mock the translate_input method
         with patch.object(Translation, 'translate_input',
-            return_value=expected_output) as mock_translate:
-                # Create translation object from API.
-                res = self.client.post(TRANSLATIONS_URL, payload)
+                return_value=expected_output) as mock_translate:
+            # Create translation object from API.
+            res = self.client.post(TRANSLATIONS_URL, payload)
 
         # Assert that the translation was created successfully.
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
@@ -141,9 +141,9 @@ class TranslationApiTests(TestCase):
             as mock_translate:
             mock_translate.side_effect = \
                 lambda: setattr(translation, 'translation_result',
-                    expected_output)
-                        # Save the translation object.
-                        translation.save()
+                   expected_output)
+            # Save the translation object.
+            translation.save()
 
         # Retrieve the translation object from API.
         res = self.client.get(f'{TRANSLATIONS_URL}{translation.id}/')
@@ -200,8 +200,8 @@ class TranslationApiTests(TestCase):
         with patch.object(Translation, 'save', new=new_save):
             with patch.object(Translation, 'translate_to_german',
                 return_value=expected_output):
-                    # Create translation object from API.
-                    res = self.client.post(TRANSLATIONS_URL, payload)
+            # Create translation object from API.
+            res = self.client.post(TRANSLATIONS_URL, payload)
 
         # Check that the request was successful.
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
