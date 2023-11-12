@@ -63,20 +63,20 @@ class ModelTests(TestCase):
 
         # Mock the translation function
         with patch('core.models.Translation.translate_to_german',
-            return_value=mocked_translation) as mock_translate:
+                   return_value=mocked_translation) as mock_translate:
             translation = models.Translation.objects.create(
                 user=user,
                 translation_input='Hello, world!',
                 content_type='plain_text',
                 translation_elements=[],
                 translation_result='Hallo, Welt!',
-                )
+            )
 
         self.assertIn(translation.translation_input, str(translation))
         self.assertEqual(translation.translation_result,
-            mock_translate.return_value)
+                         mock_translate.return_value)
 
-        if (translation.content_type == 'html'):
+        if translation.content_type == 'html':
             json_data = json.loads(translation.to_json())
 
             self.assertEqual(json_data['id'], translation.id)
