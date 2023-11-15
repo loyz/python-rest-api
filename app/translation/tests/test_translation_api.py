@@ -161,25 +161,12 @@ class TranslationApiTests(TestCase):
         # Check that the returned mocked translation matches the expected output.
         self.assertEqual(res.data['translation_result'], expected_output)
 
-    def test_actual_translation_html(self):
+    def test_actual_translation_html_simple(self):
         """Test actual translation from English
         to German for input containing HTML."""
         # Define the input and expected output.
         input_text_simple = "<h2 class='editor-heading-h2' dir='ltr'>Simple Headline</h2>"
-        input_text = "<h2 class='editor-heading-h2' dir='ltr'> \
-         <span>hallo1 as headline</span></h2>  \
-         <p class='editor-paragraph' dir='ltr'><br>hello1 as paragraph</p>  \
-         <p class='editor-paragraph' dir='ltr'><span>hello2 as paragraph  \
-         </span></p><p class='editor-paragraph' dir='ltr'><span>hello3 as  \
-         paragraph with </span><b><strong class='editor-text-bold'>bold \
-         </strong></b><span> inline</span></p>"
         expected_output_simple = "<h2 class='editor-heading-h2' dir='ltr'>Einfache Überschrift</h2>"
-        expected_output = "<h2 class='editor-heading-h2' dir='ltr'> \
-         <span>hallo1 als Überschrift</span></h2>  \
-         <p class='editor-paragraph' dir='ltr'><br>hallo1 als Absatz</p>  \
-         <p class='editor-paragraph' dir='ltr'><span>hallo2 als Absatz  \
-         </span></p><p class='editor-paragraph' dir='ltr'><span>hallo3 als Absatz mit </span><b><strong class='editor-text-bold'>fett \
-         </strong></b><span> Inline</span></p>"
 
         # Prepare the payload.
         payload = {
@@ -198,6 +185,40 @@ class TranslationApiTests(TestCase):
         # print(res.data['translation_result'])
         self.assertEqual(res.data['translation_result'], expected_output_simple.replace("'", "\""))
 
+    def test_actual_translation_html_nested(self):
+            """Test actual translation from English
+            to German for input containing HTML."""
+            # Define the input and expected output.
+            input_text = "<h2 class='editor-heading-h2' dir='ltr'> \
+            <span>hallo1 as headline</span></h2>  \
+            <p class='editor-paragraph' dir='ltr'><br>hello1 as paragraph</p>  \
+            <p class='editor-paragraph' dir='ltr'><span>hello2 as paragraph  \
+            </span></p><p class='editor-paragraph' dir='ltr'><span>hello3 as  \
+            paragraph with </span><b><strong class='editor-text-bold'>bold \
+            </strong></b><span> inline</span></p>"
+            expected_output = "<h2 class='editor-heading-h2' dir='ltr'> \
+            <span>hallo1 als Überschrift</span></h2>  \
+            <p class='editor-paragraph' dir='ltr'><br>hallo1 als Absatz</p>  \
+            <p class='editor-paragraph' dir='ltr'><span>hallo2 als Absatz  \
+            </span></p><p class='editor-paragraph' dir='ltr'><span>hallo3 als Absatz mit </span><b><strong class='editor-text-bold'>fett \
+            </strong></b><span> Inline</span></p>"
+
+            # Prepare the payload.
+            payload = {
+                'user': self.user.id,
+                'content_type': 'html',
+                'translation_input': input_text,
+            }
+
+            # Create translation object from API.
+            res = self.client.post(TRANSLATIONS_URL, payload)
+
+            # Check that the request was successful.
+            self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+            # Check that the simple returned translation matches the expected output.
+            # print(res.data['translation_result'])
+            self.assertEqual(res.data['translation_result'], expected_output.replace("'", "\""))
     # def test_translation_admin_endpoint(self):
     #     # Create a Translation instance
     #     translation = Translation.objects.create(
