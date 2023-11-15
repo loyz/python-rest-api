@@ -11,10 +11,10 @@ from drf_spectacular.utils import (
 from rest_framework import (
     viewsets,
     mixins,
-    # status,
+    status,
 )
 # from rest_framework.decorators import action
-# from rest_framework.response import Response
+from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
@@ -48,9 +48,18 @@ class TranslationViewSet(viewsets.ModelViewSet):
 
         return self.serializer_class
 
-    def perform_create(self, serializer):
-        """Create a new translation."""
-        serializer.save(user=self.request.user)
+    def create(self, request, *args, **kwargs):
+            """Create a new translation."""
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+
+            # Call translate_input() method before saving the object.
+            translation = serializer.save(user=request.user)
+            translation.translate_input()
+            translation.save()
+
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 @extend_schema_view(

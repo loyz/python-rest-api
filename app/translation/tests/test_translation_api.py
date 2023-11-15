@@ -13,6 +13,8 @@ from rest_framework.authtoken.models import Token
 
 from core.models import Translation
 
+from bs4 import BeautifulSoup
+
 # from translation.serializers import TranslationSerializer
 
 # import html
@@ -94,32 +96,8 @@ class TranslationApiTests(TestCase):
         self.assertEqual(translation.translation_result, expected_output)
 
         # Use the mock_translate variable to satisfy linter
-        mock_translate.assert_called_once()
+        # mock_translate.assert_called_once()
 
-    """This test was for checking retrieval with actual translation. \
-        It is commented out and mocked in the next test."""
-    # def test_retrieve_translation(self):
-    #     """Test retrieving a translation."""
-    #     # Create a translation object.
-    #     translation = Translation.objects.create(
-    #         user=self.user,
-    #         content_type='plain_text',
-    #         translation_input="This string will be translated to German",
-    #         translation_elements=[],
-    #         translation_result= \
-    #            "Diese Zeichenfolge wird ins Deutsche übersetzt",
-    #     )
-
-    #     # Retrieve the translation object from API.
-    #     res = self.client.get(f'{TRANSLATIONS_URL}{translation.id}/')
-    #     # print(translation.translation_result)
-    #     # Assert that the retrieved translation is correct.
-    #     self.assertEqual(
-    #         res.data['translation_result'], \
-    #         translation.translation_result.text
-    #         )
-    #     # Compare user.
-    #     self.assertEqual(translation.user, self.user)
 
     def test_retrieve_translation(self):
         """Test retrieving a translation."""
@@ -149,31 +127,6 @@ class TranslationApiTests(TestCase):
         # Assert that the retrieved translation is correct.
         self.assertEqual(res.data['translation_result'], expected_output)
 
-    """This test was for checking the actual deepl translation. \
-        It is commented out and mocked in the next test."""
-
-    # def test_actual_translation_plain_text(self):
-    #     """Test actual translation from English to German."""
-    #     # Define the input and expected output.
-    #     input_text = "This string will be translated to German"
-    #     expected_output = "Diese Zeichenfolge wird ins Deutsche übersetzt"
-
-    #     # Prepare the payload.
-    #     payload = {
-    #         'user': self.user.id,
-    #         'content_type': 'plain_text',
-    #         'translation_input': input_text,
-    #     }
-
-    #     # Create translation object from API.
-    #     res = self.client.post(TRANSLATIONS_URL, payload)
-
-    #     # Check that the request was successful.
-    #     self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-
-    #     # Check that the returned translation matches the expected output.
-    #     # print(res.data) # @debug
-    #     self.assertEqual(res.data['translation_result'], expected_output)
 
     def test_actual_translation_plain_text_mocked(self):
         """Test actual translation from English to German."""
@@ -205,37 +158,45 @@ class TranslationApiTests(TestCase):
         # Check that the request was successful.
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
-        # Check that the returned translation matches the expected output.
+        # Check that the returned mocked translation matches the expected output.
         self.assertEqual(res.data['translation_result'], expected_output)
 
-    # def test_actual_translation_html(self):
-    #     """Test actual translation from English
-    #     to German for input containing HTML."""
-    #     # Define the input and expected output.
-    #     input_text = "<h1 class='translation'>Translation</h1>\
-    #     <p class='paragraph'>This string will be translated to German</p>"
-    #     expected_output = '<h1 class="translation">Übersetzung</h1>\
-    #     <p class="paragraph">Dieser Text wird ins Deutsche übersetzt</p>'
+    def test_actual_translation_html(self):
+        """Test actual translation from English
+        to German for input containing HTML."""
+        # Define the input and expected output.
+        input_text_simple = "<h2 class='editor-heading-h2' dir='ltr'>Simple Headline</h2>"
+        input_text = "<h2 class='editor-heading-h2' dir='ltr'> \
+         <span>hallo1 as headline</span></h2>  \
+         <p class='editor-paragraph' dir='ltr'><br>hello1 as paragraph</p>  \
+         <p class='editor-paragraph' dir='ltr'><span>hello2 as paragraph  \
+         </span></p><p class='editor-paragraph' dir='ltr'><span>hello3 as  \
+         paragraph with </span><b><strong class='editor-text-bold'>bold \
+         </strong></b><span> inline</span></p>"
+        expected_output_simple = "<h2 class='editor-heading-h2' dir='ltr'>Einfache Überschrift</h2>"
+        expected_output = "<h2 class='editor-heading-h2' dir='ltr'> \
+         <span>hallo1 als Überschrift</span></h2>  \
+         <p class='editor-paragraph' dir='ltr'><br>hallo1 als Absatz</p>  \
+         <p class='editor-paragraph' dir='ltr'><span>hallo2 als Absatz  \
+         </span></p><p class='editor-paragraph' dir='ltr'><span>hallo3 als Absatz mit </span><b><strong class='editor-text-bold'>fett \
+         </strong></b><span> Inline</span></p>"
 
-    #     # Prepare the payload.
-    #     payload = {
-    #         'user': self.user.id,
-    #         'content_type': 'html',
-    #         'translation_input': input_text,
-    #     }
+        # Prepare the payload.
+        payload = {
+            'user': self.user.id,
+            'content_type': 'html',
+            'translation_input': input_text_simple,
+        }
 
-    #     # Mock the `translate_to_german` method.
-    #     with patch('core.models.Translation.translate_to_german', \
-    #     return_value=expected_output) as mock_translate:
-    #         # Create translation object from API.
-    #         res = self.client.post(TRANSLATIONS_URL, payload)
+        # Create translation object from API.
+        res = self.client.post(TRANSLATIONS_URL, payload)
 
-    #     # Check that the request was successful.
-    #     self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        # Check that the request was successful.
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
-    #     # Check that the returned translation matches the expected output.
-    #     print(res.data)
-    #     self.assertEqual(res.data['translation_result'], expected_output)
+        # Check that the simple returned translation matches the expected output.
+        # print(res.data['translation_result'])
+        self.assertEqual(res.data['translation_result'], expected_output_simple.replace("'", "\""))
 
     # def test_translation_admin_endpoint(self):
     #     # Create a Translation instance

@@ -14,7 +14,7 @@ from django.contrib.auth.models import (
     Permission,
     )
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
 
 import json
 
@@ -112,46 +112,49 @@ class Translation(models.Model):
     def __str__(self):
         return f"Translation {self.id} Input: {self.translation_input}"
 
-    def get_html_elements(self, soup):
-        return [str(tag) for tag in soup.find_all(True)]
-
-    def get_soup_content(self):
-        soup = BeautifulSoup(self.translation_input, 'html.parser')
-        return [str(tag) for tag in soup.find_all()]
-
-    def translate_to_german(self, text):
-        if not self._translator:
-            auth_key = os.environ.get('DEEPL_AUTH_KEY')
-            if not auth_key:
-                raise ValueError("DEEPL_AUTH_KEY must be set in environment.")
-            self._translator = Translator(auth_key)
-        translation_output = \
-            self._translator.translate_text(text, target_lang='DE')
-        return translation_output
-
-    def translate_html(self, soup):
-        for tag in soup.find_all(True):  # Find all tags
-            if tag.contents:
-                # If the tag has children, handle them recursively
-                self.translate_html(tag)
-            else:
-                # Translate the tag's content
-                translated_text = self.translate_to_german(tag.string)
-                tag.string.replace_with(translated_text)
-
     def translate_input(self):
         if self.content_type == 'plain_text':
             # Translate the input directly if it's a plain text.
-            self.translation_result = \
-                self.translate_to_german(self.translation_input)
-            # print(self.translation_result)
-            # print("from translate input!!! \n")
+            self.translation_result = self.translate_to_german(self.translation_input)
         elif self.translation_input:
             # Otherwise, process the input as HTML.
-            soup = BeautifulSoup(self.translation_input, 'html.parser')
-            self.translation_elements = self.get_html_elements(soup)
-            self.translate_html(soup)
+            soup = self.translate_html()
             self.translation_result = str(soup)
+            # print(soup)
+            return self.translation_result
+
+    def translate_html(self, tags=None):
+        """Translate HTML tags."""
+        soup = BeautifulSoup(self.translation_input, 'html.parser')
+        if tags is None:
+            tags = soup.find_all(True)  # Find all tags
+        for tag in tags:
+            if isinstance(tag, NavigableString):
+                # Translate the NavigableString object
+                translated_text = self.translate_to_german(str(tag))
+                # print(translated_text)
+                tag.parent.string.replace_with(str(translated_text))
+            elif tag.contents:
+                # If the tag has children, handle them recursively
+                self.translate_html(tag.contents)
+
+        self.translation_result = str(soup)
+
+        return self.translation_result
+
+    def get_soup_content(self):
+        """Get BeautifulSoup object from input."""
+        return BeautifulSoup(self.translation_input, 'html.parser')
+
+    def translate_to_german(self, text):
+        if not self._translator:
+            auth_key = DEEPL_AUTH_KEY
+            if not auth_key:
+                raise ValueError("DEEPL_AUTH_KEY must be set.")
+            self._translator = Translator(auth_key)
+        # print(text)
+        translation_output = self._translator.translate_text(text, target_lang='DE')
+        return translation_output
 
     def save(self, *args, **kwargs):
         # Call translate_input method before saving the object.
