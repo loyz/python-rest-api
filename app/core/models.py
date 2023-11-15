@@ -126,17 +126,32 @@ class Translation(models.Model):
     def translate_html(self, tags=None):
         """Translate HTML tags."""
         soup = BeautifulSoup(self.translation_input, 'html.parser')
-        if tags is None:
-            tags = soup.find_all(True)  # Find all tags
-        for tag in tags:
+        for tag in soup.descendants:
+            if tag == None:
+                continue
+            # fix: this causes only the first NavigableString to be translated
+            if tag.parent.string == None:
+                continue
             if isinstance(tag, NavigableString):
-                # Translate the NavigableString object
                 translated_text = self.translate_to_german(str(tag))
-                # print(translated_text)
+                # print(tag.parent.string)
                 tag.parent.string.replace_with(str(translated_text))
-            elif tag.contents:
-                # If the tag has children, handle them recursively
-                self.translate_html(tag.contents)
+
+        return soup
+
+        # if tags is None:
+        #     tags = soup.find_all(True)  # Find all tags
+        # for tag in tags:
+        #     if isinstance(tag, NavigableString):
+        #         # Translate the NavigableString object
+        #         translated_text = self.translate_to_german(str(tag))
+        #         # print(tag.parent)
+        #         # if tag.parent.string.has_attr('replace_with'):
+        #         tag.parent.string.replace_with(str(translated_text))
+        #     elif tag.contents:
+        #         # print(tag.contents)
+        #         # If the tag has children, handle them recursively
+        #         self.translate_html(tag.contents)
 
         self.translation_result = str(soup)
 
